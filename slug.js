@@ -1,15 +1,5 @@
-(function (root) {
-// lazy require symbols table
-var _symbols, removelist;
-function symbols(code) {
-    if (_symbols) return _symbols[code];
-    _symbols = require('unicode/category/So');
-    removelist = ['sign','cross','of','symbol','staff','hand','black','white']
-        .map(function (word) {return new RegExp(word, 'gi')});
-    return _symbols[code];
-}
-
 function slug(string, opts) {
+    unidecode = require('unidecode')
     string = string.toString();
     if ('string' === typeof opts)
         opts = {replacement:opts};
@@ -49,12 +39,8 @@ function slug(string, opts) {
             } else {
                 code = string.charCodeAt(i);
             }
-            if (opts.symbols && (unicode = symbols(code))) {
-                char = unicode.name.toLowerCase();
-                for(var j = 0, rl = removelist.length; j < rl; j++) {
-                    char = char.replace(removelist[j], '');
-                }
-                char = char.replace(/^\s+|\s+$/g, '');
+            if (opts.symbols) {
+                char = unidecode(char)
             }
         }
         char = char.replace(/[^\w\s\-\.\_~]/g, ''); // allowed
@@ -184,29 +170,4 @@ slug.defaults.modes = {
     },
 };
 
-// Be compatible with different module systems
-
-if (typeof define !== 'undefined' && define.amd) { // AMD
-    // dont load symbols table in the browser
-    for (var key in slug.defaults.modes) {
-        if (!slug.defaults.modes.hasOwnProperty(key))
-            continue;
-
-        slug.defaults.modes[key].symbols = false;
-    }
-    define([], function () {return slug});
-} else if (typeof module !== 'undefined' && module.exports) { // CommonJS
-    symbols(); // preload symbols table
-    module.exports = slug;
-} else { // Script tag
-    // dont load symbols table in the browser
-    for (var key in slug.defaults.modes) {
-        if (!slug.defaults.modes.hasOwnProperty(key))
-            continue;
-
-        slug.defaults.modes[key].symbols = false;
-    }
-    root.slug = slug;
-}
-
-}(this));
+module.exports = slug;
