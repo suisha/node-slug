@@ -191,15 +191,8 @@ describe 'slug', ->
             [slug "foo #{char} bar baz"].should.eql ["foo-bar-baz"]
 
     it 'should replace unicode', ->
-        char_map = {
-            '☢':"radioactive",'☠':"skull-and-bones",'☤':"caduceus",
-            '☣':"biohazard",'☭':"hammer-and-sickle", '☯':"yin-yang",'☮':"peace",
-            '☏':"telephone",'☔':"umbrella-with-rain-drops",'☎':"telephone",
-            '☀':"sun-with-rays",'★':"star",'☂':"umbrella",'☃':"snowman",
-            '✈':"airplane",'✉':"envelope",'✊':"raised-fist"
-        }
-        for char, replacement of char_map
-            [slug "foo #{char} bar baz"].should.eql ["foo-#{replacement}-bar-baz"]
+        slug('ひらがな abc 123 FOO').should.eql 'hiragana-abc-123-FOO'
+        slug('لماذا نعيش؟').should.eql 'lmdh-naaysh'
 
     it 'should replace no unicode when disabled', ->
         char_map = '😹☢☠☤☣☭☯☮☏☔☎☀★☂☃✈✉✊'.split ''
@@ -216,7 +209,7 @@ describe 'slug', ->
         slug('ąčęėįšųūžĄČĘĖĮŠŲŪŽ').should.eql 'aceeisuuzACEEISUUZ'
 
     it 'should replace multichars', ->
-        [slug "w/ <3 && sugar || ☠"].should.eql ['with-love-and-sugar-or-skull-and-bones']
+        [slug "w/ <3 && sugar"].should.eql ['with-love-and-sugar']
 
     it 'should be flavourable', ->
         text = "It's your journey ... we guide you through."
